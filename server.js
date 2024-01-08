@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const router = require("./routers/index");
-const errorHandler = require("./middleware/error.handler");
+const { handler } = require("./middleware/error.handler");
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(
 
 require("./config/db")();
 app.use("/api/v1", router);
-app.use(errorHandler.handler);
 app.listen(process.env.PORT, function () {
   console.log("Server listening on", process.env.PORT);
 });
+app.use(handler);

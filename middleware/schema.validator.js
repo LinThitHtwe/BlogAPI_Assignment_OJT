@@ -11,17 +11,16 @@ const validationOptions = {
 
 const schemaValidator = (path, useJoiError = true) => {
   const schema = schemas[path];
-
+  console.log("path---", path);
   if (!schema) {
     throw new Error(`Schema ${path} not found`);
   }
-
   return (req, res, next) => {
     const method = req.method.toLowerCase();
     if (!supportedMethods.includes(method)) {
       return next();
     }
-    const { error, value } = schema.validate(req.body.data, validationOptions);
+    const { error, value } = schema.validate(req.body, validationOptions);
     if (error) {
       const customError = {
         status: statusName.fail,

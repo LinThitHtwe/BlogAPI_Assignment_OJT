@@ -1,6 +1,36 @@
 const {
   createCategory: createCategoryService,
+  getCategoryById: getCategoryByIdService,
 } = require("../services/category.service");
-const schemaValidator = require("../middleware/schema.validator");
+const { created, retrieved } = require("./base.controller");
+const responseMessages = require("../constants/response.messages");
 
-const addCategory = (req, res, schemaValidator) => {};
+const addCategory = async (req, res, next) => {
+  try {
+    const result = await createCategoryService(req.body);
+    return created(
+      res,
+      `Category ${responseMessages.successfullyCreated}`,
+      result
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCategoryById = async (req, res, next) => {
+  console.log(req.params.categoryId);
+  try {
+    const result = await getCategoryByIdService(req.params.categoryId);
+    console.log("result----", result);
+    return retrieved(
+      res,
+      `Category ${responseMessages.retrievedSuccessfully}`,
+      result
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getCategoryById, addCategory };

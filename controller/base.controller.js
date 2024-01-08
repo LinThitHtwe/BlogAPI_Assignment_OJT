@@ -1,5 +1,5 @@
 const responseStatus = require("../constants/response.status");
-
+const dbErrorMessages = require("../constants/db.error");
 const success = (res, message, data) => {
   return res.status(200).json({
     status: responseStatus.success,
@@ -40,9 +40,26 @@ const accepted = (res, message, data = null) => {
   });
 };
 
-const updated = (res, message, data = null) => {
-  // if(!data) {
-  //     throw
-  // }
-  return success(res, message, data);
+const retrieved = (res, name, data = null) => {
+  if (!data) {
+    throw itemNotFoundError(dbErrorMessages.itemNotFound);
+  }
+  return success(res, name, data);
+};
+
+const updated = (res, name, data = null) => {
+  if (!data) {
+    throw itemNotFoundError(name);
+  }
+  return success(res, name, data);
+};
+
+module.exports = {
+  success,
+  ok,
+  error,
+  created,
+  accepted,
+  retrieved,
+  updated,
 };
