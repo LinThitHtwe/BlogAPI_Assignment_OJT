@@ -12,6 +12,12 @@ exports.unauthorizedError = (name) => {
   return err;
 };
 
+exports.alreadyExistsError = (name) => {
+  let err = new Error(name);
+  err.name = dbErrorMessages.itemAlreadyExists;
+  return err;
+};
+
 exports.invalidIdError = (key) => {
   let err = new Error(key);
   err.name = dbErrorMessages.invalidId;

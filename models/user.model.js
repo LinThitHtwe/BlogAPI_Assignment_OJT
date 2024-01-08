@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const role = require("@/constants/role");
-const { userStatus } = require("@/constants/status");
+const role = require("../constants/role");
+const { userStatus } = require("../constants/status");
 
 const userSchema = mongoose.Schema(
   {
@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+
     password: {
       type: String,
       required: true,
@@ -36,10 +37,6 @@ const userSchema = mongoose.Schema(
     },
     description: {
       type: String,
-    },
-    created_at: {
-      type: Date,
-      default: Date.now,
     },
   },
   { timestamps: true }

@@ -3,3 +3,5 @@ const auth = {
   register: "/register",
   logout: "/logout",
 };
+
+module.exports = auth;
