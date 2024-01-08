@@ -1,6 +1,7 @@
 const responseStatus = {
-  success: "Success",
+  success: "success",
   error: "error",
+  fail: "failed",
 };
 
 module.exports = responseStatus;
