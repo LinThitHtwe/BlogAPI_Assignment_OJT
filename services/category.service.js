@@ -26,7 +26,17 @@ const getCategoryById = async (categoryId) => {
   }
 };
 
+const getAllCategories = async () => {
+  try {
+    const categories = await Category.find().sort({ createdAt: -1 });
+    return categories;
+  } catch (error) {
+    throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
+  }
+};
+
 module.exports = {
+  getAllCategories,
   createCategory,
   getCategoryById,
 };

@@ -5,7 +5,6 @@ const blog = Joi.object({
   content: Joi.string().required(),
   url_list: Joi.array().items(Joi.string()),
   status: Joi.string().valid("pending", "rejected", "approved"),
-  creator: Joi.string().required(),
 });
 
 module.exports = blog;

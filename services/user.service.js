@@ -16,6 +16,28 @@ const addUser = async (userData) => {
   }
 };
 
+const updateUser = async (userId, userData) => {
+  try {
+    await checkId(userId, User, dbErrorMessages.itemNotFound);
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      throw new Error(dbErrorMessages.itemNotFound);
+    }
+    const result = await User.findByIdAndUpdate(userId, userData, {
+      new: true,
+    });
+    return result;
+  } catch (error) {
+    if (error.code === 11000) {
+      throw dbError.alreadyExistsError(dbErrorMessages.alreadyExistsError);
+    }
+    if (error.name === dbErrorMessages.itemNotFound) {
+      throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
+    }
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
 const getUserByEmail = async (email) => {
   try {
     const result = await User.findOne({ email });
@@ -40,6 +62,7 @@ const getUserById = async (userId) => {
 
 module.exports = {
   addUser,
+  updateUser,
   getUserByEmail,
   getUserById,
 };
