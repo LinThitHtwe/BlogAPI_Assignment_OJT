@@ -1,6 +1,7 @@
 const errorNameConstant = require("../constants/db.error");
 const responseStatus = require("../constants/response.status");
 const appErrorsMessages = require("../constants/app.error");
+const dbErrors = require("../constants/db.error");
 
 exports.handler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -44,6 +45,14 @@ exports.handler = (err, req, res, next) => {
       res.status(403).json({
         status: responseStatus.fail,
         message: appErrorsMessages.forbidden,
+        data: null,
+      });
+      break;
+
+    case errorNameConstant.unprocessable:
+      res.status(422).json({
+        status: responseStatus.fail,
+        message: errorNameConstant.unprocessable,
         data: null,
       });
       break;

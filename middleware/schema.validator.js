@@ -1,6 +1,7 @@
 const schemas = require("../validators/validate");
 const statusName = require("../constants/response.status");
-
+const dbError = require("../errors/db.error");
+const dbErrorMessages = require("../constants/db.error");
 const supportedMethods = ["post", "put", "delete", "patch"];
 
 const validationOptions = {
@@ -11,7 +12,6 @@ const validationOptions = {
 
 const schemaValidator = (path, useJoiError = true) => {
   const schema = schemas[path];
-  console.log("path---", path);
   if (!schema) {
     throw new Error(`Schema ${path} not found`);
   }
@@ -37,6 +37,7 @@ const schemaValidator = (path, useJoiError = true) => {
         },
       };
       return res.status(422).json(useJoiError ? joiError : customError);
+      //throw dbError.unprocessableError(dbErrorMessages.unprocessable)
     }
     req.body = value;
     return next();
