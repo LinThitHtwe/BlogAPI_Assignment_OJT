@@ -19,10 +19,8 @@ const addCategory = async (req, res, next) => {
 };
 
 const getCategoryById = async (req, res, next) => {
-  console.log(req.params.categoryId);
   try {
     const result = await getCategoryByIdService(req.params.categoryId);
-    console.log("result----", result);
     return retrieved(
       res,
       `Category ${responseMessages.retrievedSuccessfully}`,

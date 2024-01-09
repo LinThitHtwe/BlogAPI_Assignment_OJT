@@ -19,6 +19,9 @@ const getCategoryById = async (categoryId) => {
     const result = await Category.findById(categoryId);
     return result;
   } catch (error) {
+    if (error.name === dbErrorMessages.itemNotFound) {
+      throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
+    }
     throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
   }
 };

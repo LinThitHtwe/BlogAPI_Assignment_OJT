@@ -4,6 +4,7 @@ const blog = {
   updateBlog: "/update/:blogId",
   deleteBlog: "/delete",
   changeBlogStatus: "/change-status/:blogId",
+  getBlogById: "/get/:blogId",
 };
 
 module.exports = blog;

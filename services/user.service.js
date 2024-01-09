@@ -29,8 +29,11 @@ const getUserById = async (userId) => {
   try {
     await checkId(userId, User, dbErrorMessages.itemNotFound);
     const result = await User.findById(userId);
-    return result ? result : null;
+    return result;
   } catch (error) {
+    if (error.name === dbErrorMessages.itemNotFound) {
+      throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
+    }
     throw dbError.unprocessableError(dbErrorMessages.unprocessable);
   }
 };
