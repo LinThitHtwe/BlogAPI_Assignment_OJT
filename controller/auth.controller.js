@@ -12,10 +12,6 @@ const dbErrorMessages = require("../constants/db.error");
 const registerUser = async (req, res, next) => {
   const userData = req.body;
   try {
-    const existingUser = await getUserByEmailService(userData.email);
-    if (existingUser) {
-      throw dbErrors.alreadyExistsError(dbErrorMessages.itemAlreadyExists);
-    }
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const result = await addUserService({
       ...userData,
