@@ -4,5 +4,5 @@ const userRoutes = require("../routes/user");
 const router = require("express").Router();
 
 router.get(userRoutes.getUserById, authenticateToken, getUserById);
-router.get(userRoutes.updateUser, updateUser);
+router.put(userRoutes.updateUser, authenticateToken, updateUser);
 module.exports = router;

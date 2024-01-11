@@ -45,7 +45,7 @@ const loginUser = async (req, res, next) => {
       throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
     }
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
-      expiresIn: "25s",
+      expiresIn: "1h",
     });
     retrieved(res, `User ${responseMessages.retrievedSuccessfully}`, {
       user,

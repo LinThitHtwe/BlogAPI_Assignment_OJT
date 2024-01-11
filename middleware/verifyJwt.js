@@ -12,12 +12,9 @@ function authenticateToken(req, res, next) {
   }
 
   jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-    console.log("decoded--user", user);
-    console.log("secret--", process.env.SECRET_KEY);
     if (err) {
       throw appErrors.forbidden(appErrorsMessages.forbidden);
     }
-
     req.user = user;
     next();
   });

@@ -6,6 +6,8 @@ const { created, retrieved, updated } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
 const dbErrors = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
+const verifyRole = require("./verifyRole");
+const role = require("../constants/role");
 
 const getUserById = async (req, res, next) => {
   try {
@@ -21,6 +23,19 @@ const getUserById = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
+    const oldUser = await getUserByIdService(req.params.userId);
+    if (!oldUser) {
+      throw dbErrors.itemNotFoundError(dbErrorMessages.itemNotFound);
+    }
+    const currentLoginUser = verifyRole(req);
+    if (
+      currentLoginUser &&
+      currentLoginUser.role === role.user &&
+      oldUser._id != currentLoginUser._id
+    ) {
+      throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
+    }
+
     const user = await updateUserService(req.params.userId, req.body);
     updated(res, `User ${responseMessages.updatedSuccessfully}`, user);
   } catch (error) {

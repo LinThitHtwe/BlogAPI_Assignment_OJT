@@ -8,6 +8,8 @@ const { created, updated, retrieved } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
 const dbError = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
+const verifyRole = require("./verifyRole");
+const role = require("../constants/role");
 
 const getAllBlog = async (req, res, next) => {
   const { page, limit } = req.query;
@@ -25,7 +27,15 @@ const getAllBlog = async (req, res, next) => {
 
 const addBlog = async (req, res, next) => {
   try {
-    const blog = await createBlogService(req.body);
+    const currentLoginUser = verifyRole(req);
+    if (!currentLoginUser) {
+      throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
+    }
+    const requestData = req.body;
+    const blog = await createBlogService({
+      ...requestData,
+      creator: currentLoginUser._id,
+    });
     created(res, `Blog ${responseMessages.successfullyCreated}`, blog);
   } catch (error) {
     next(error);
@@ -43,6 +53,15 @@ const getBlogById = async (req, res, next) => {
 
 const updateBlog = async (req, res, next) => {
   try {
+    const currentLoginUser = verifyRole(req);
+    const oldBlog = await getBlogByIdService(req.params.blogId);
+    if (
+      !currentLoginUser ||
+      (currentLoginUser?.role === role.user &&
+        currentLoginUser._id !== oldBlog.creator)
+    ) {
+      throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
+    }
     const blog = await updateBlogService(req.params.blogId, req.body);
     if (!blog) {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
