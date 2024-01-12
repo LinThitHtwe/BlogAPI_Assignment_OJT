@@ -13,7 +13,7 @@ const verifyRole = require("./verifyRole");
 
 const addCategory = async (req, res, next) => {
   try {
-    const currentLoginUser = verifyRole(req);
+    const currentLoginUser = verifyRole(req.header("Authorization"));
     if (!currentLoginUser || currentLoginUser?.role !== role.admin) {
       throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
     }
@@ -60,7 +60,7 @@ const getCategoryById = async (req, res, next) => {
 
 const updateCategory = async (req, res, next) => {
   try {
-    const currentLoginUser = verifyRole(req);
+    const currentLoginUser = verifyRole(req.header("Authorization"));
     if (!currentLoginUser || currentLoginUser?.role !== role.admin) {
       throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
     }

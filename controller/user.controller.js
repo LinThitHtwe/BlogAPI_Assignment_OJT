@@ -27,7 +27,7 @@ const updateUser = async (req, res, next) => {
     if (!oldUser) {
       throw dbErrors.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
-    const currentLoginUser = verifyRole(req);
+    const currentLoginUser = verifyRole(req.header("Authorization"));
     if (
       currentLoginUser &&
       currentLoginUser.role === role.user &&

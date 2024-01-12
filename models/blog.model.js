@@ -18,6 +18,12 @@ const blogSchema = new base.Schema({
     default: postStatus.pending,
     enum: [postStatus.pending, postStatus.approved, postStatus.rejected],
   },
+  categories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+  ],
 });
 
 const Blog = mongoose.model("Blog", blogSchema);

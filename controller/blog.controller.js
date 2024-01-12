@@ -3,6 +3,7 @@ const {
   updateBlog: updateBlogService,
   getBlogById: getBlogByIdService,
   getAllBlog: getAllBlogService,
+  getTotalBlogsCount: getTotalBlogsCountService,
 } = require("../services/blog.service");
 const { created, updated, retrieved } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
@@ -15,11 +16,13 @@ const getAllBlog = async (req, res, next) => {
   const { page, limit } = req.query;
   try {
     const blogs = await getAllBlogService(page * 10, limit);
-    return retrieved(
-      res,
-      `Blogs ${responseMessages.retrievedSuccessfully}`,
-      blogs
-    );
+    const totalBlogs = await getTotalBlogsCountService();
+    const nextPage = (page + 1) * 10 > totalBlogs ? null : page + 1;
+    return retrieved(res, `Blogs ${responseMessages.retrievedSuccessfully}`, {
+      ...blogs,
+      totalBlogs,
+      nextPage,
+    });
   } catch (error) {
     next(error);
   }
@@ -27,7 +30,7 @@ const getAllBlog = async (req, res, next) => {
 
 const addBlog = async (req, res, next) => {
   try {
-    const currentLoginUser = verifyRole(req);
+    const currentLoginUser = verifyRole(req.header("Authorization"));
     if (!currentLoginUser) {
       throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
     }
@@ -53,7 +56,7 @@ const getBlogById = async (req, res, next) => {
 
 const updateBlog = async (req, res, next) => {
   try {
-    const currentLoginUser = verifyRole(req);
+    const currentLoginUser = verifyRole(req.header("Authorization"));
     const oldBlog = await getBlogByIdService(req.params.blogId);
     if (
       !currentLoginUser ||
@@ -62,7 +65,11 @@ const updateBlog = async (req, res, next) => {
     ) {
       throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
     }
-    const blog = await updateBlogService(req.params.blogId, req.body);
+    const requestData = req.body;
+    const blog = await updateBlogService(req.params.blogId, {
+      ...requestData,
+      updater: currentLoginUser._id,
+    });
     if (!blog) {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
