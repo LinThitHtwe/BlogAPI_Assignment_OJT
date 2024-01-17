@@ -1,6 +1,7 @@
 const {
   addUser: addUserService,
   getUserByEmail: getUserByEmailService,
+  getUserByUsername: getUserByUsernameService,
 } = require("../services/user.service");
 const { created, retrieved } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
@@ -10,9 +11,12 @@ const dbErrors = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
 const role = require("../constants/role");
 const verifyRole = require("./verifyRole");
+const appErrors = require("../constants/app.error");
+const { userStatus } = require("../constants/status");
 
 const registerUser = async (req, res, next) => {
   const userData = req.body;
+
   try {
     const currentLoginUser = verifyRole(req.header("Authorization"));
     if (
@@ -23,6 +27,7 @@ const registerUser = async (req, res, next) => {
     ) {
       throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
     }
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const result = await addUserService({
       ...userData,
@@ -50,11 +55,17 @@ const loginUser = async (req, res, next) => {
   try {
     const user = await getUserByEmailService(email);
     if (!user) {
-      throw dbErrors.itemNotFoundError(dbErrorMessages.itemNotFound);
+      throw dbErrors.itemNotFoundError(appErrors.emailNotExist);
     }
+
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
+      throw dbErrors.unauthorizedError(appErrors.incorrectPassword);
+    }
+
+    if (user.status == userStatus.suspended) {
+      console.log("suspended");
+      throw dbErrors.suspendedError(appErrors.accountSuspended);
     }
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
       expiresIn: "1h",

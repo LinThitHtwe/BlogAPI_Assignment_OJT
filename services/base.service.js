@@ -12,3 +12,10 @@ exports.checkValidObjectId = async (id, key) => {
     throw invalidIdError(key);
   }
 };
+
+exports.getObjectId = async (id) => {
+  await this.checkValidObjectId(id);
+  if (id) {
+    return new mongoose.Types.ObjectId(id);
+  }
+};

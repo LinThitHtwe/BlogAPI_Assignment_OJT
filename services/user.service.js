@@ -47,10 +47,21 @@ const getUserByEmail = async (email) => {
   }
 };
 
+const getUserByUsername = async (username) => {
+  try {
+    const result = await User.findOne({ username });
+    return result ? result : null;
+  } catch (error) {
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
 const getUserById = async (userId) => {
   try {
     await checkId(userId, User, dbErrorMessages.itemNotFound);
-    const result = await User.findById(userId);
+    const result = await User.findById(userId).select(
+      "username email description"
+    );
     return result;
   } catch (error) {
     if (error.name === dbErrorMessages.itemNotFound) {
@@ -60,9 +71,30 @@ const getUserById = async (userId) => {
   }
 };
 
+const deleteUser = async (userId) => {
+  try {
+    await checkId(userId, User, dbErrorMessages.itemNotFound);
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      throw new Error(dbErrorMessages.itemNotFound);
+    }
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { isDeleted: true },
+      { new: true }
+    );
+    console.log("result--", result);
+    return result;
+  } catch (error) {
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
 module.exports = {
   addUser,
   updateUser,
   getUserByEmail,
   getUserById,
+  deleteUser,
+  getUserByUsername,
 };

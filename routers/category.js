@@ -19,6 +19,7 @@ router.post(
 router.get(categoryRoute.all, getAllCategories);
 router.put(
   categoryRoute.update,
+  authenticateToken,
   schemaValidator("category/add"),
   updateCategory
 );

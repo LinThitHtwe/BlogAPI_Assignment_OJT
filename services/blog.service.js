@@ -1,7 +1,7 @@
 const Blog = require("../models/blog.model");
 const dbError = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
-const { checkId } = require("./base.service");
+const { checkId, getObjectId } = require("./base.service");
 
 const createBlog = async (categoryData) => {
   const blog = new Blog(categoryData);
@@ -15,7 +15,9 @@ const createBlog = async (categoryData) => {
 
 const getAllBlog = async (skip, limit = 10) => {
   try {
-    const blogs = await Blog.find()
+    const blogs = await Blog.find({
+      title: "Add From Postman",
+    })
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
@@ -28,6 +30,7 @@ const getAllBlog = async (skip, limit = 10) => {
         select: "username email",
       })
       .exec();
+    console.log(blogs);
     return blogs;
   } catch (error) {
     console.log(error);

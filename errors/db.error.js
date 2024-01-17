@@ -18,6 +18,12 @@ exports.alreadyExistsError = (name) => {
   return err;
 };
 
+exports.suspendedError = (key) => {
+  let err = new Error(key);
+  err.name = dbErrorMessages.suspended;
+  return err;
+};
+
 exports.invalidIdError = (key) => {
   let err = new Error(key);
   err.name = dbErrorMessages.invalidId;

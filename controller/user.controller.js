@@ -1,8 +1,9 @@
 const {
   getUserById: getUserByIdService,
   updateUser: updateUserService,
+  deleteUser: deleteUserService,
 } = require("../services/user.service");
-const { created, retrieved, updated } = require("./base.controller");
+const { retrieved, updated, deleted } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
 const dbErrors = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
@@ -43,7 +44,32 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  console.log("delete user");
+  try {
+    const oldUser = await getUserByIdService(req.params.userId);
+    if (!oldUser) {
+      throw dbErrors.itemNotFoundError(dbErrorMessages.itemNotFound);
+    }
+    const currentLoginUser = verifyRole(req.header("Authorization"));
+    if (
+      currentLoginUser?.role === role.user &&
+      req.params.userId != currentLoginUser._id
+    ) {
+      throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
+    }
+    await deleteUserService(req.params.userId);
+
+    deleted(res, `User ${responseMessages.deletedSuccessfully}`, {
+      message: `User ${responseMessages.deletedSuccessfully}`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getUserById,
   updateUser,
+  deleteUser,
 };

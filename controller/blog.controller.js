@@ -15,7 +15,7 @@ const role = require("../constants/role");
 const getAllBlog = async (req, res, next) => {
   const { page, limit } = req.query;
   try {
-    const blogs = await getAllBlogService(page * 10, limit);
+    const blogs = await getAllBlogService(page * 0, limit);
     const totalBlogs = await getTotalBlogsCountService();
     const nextPage = (page + 1) * 10 > totalBlogs ? null : page + 1;
     return retrieved(res, `Blogs ${responseMessages.retrievedSuccessfully}`, {
@@ -74,6 +74,13 @@ const updateBlog = async (req, res, next) => {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
     updated(res, `Blog ${responseMessages.updatedSuccessfully}`, blog);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteBlog = async (req, res, next) => {
+  try {
   } catch (error) {
     next(error);
   }
