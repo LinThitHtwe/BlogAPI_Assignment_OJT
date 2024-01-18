@@ -10,6 +10,7 @@ const dbErrors = {
   limitFileSize: "LIMIT_FILE_SIZE",
   limitFileCount: "LIMIT_FILE_COUNT",
   MulterError: "MulterError",
+  suspended: "SUSPENDED",
 };
 
 module.exports = dbErrors;

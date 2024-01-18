@@ -54,6 +54,13 @@ const updated = (res, name, data = null) => {
   return success(res, name, data);
 };
 
+exports.deleted = (res, name, data = null) => {
+  if (!data) {
+    throw itemNotFoundError(name);
+  }
+  return success(res, name, data);
+};
+
 module.exports = {
   success,
   ok,

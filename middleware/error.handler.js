@@ -6,7 +6,7 @@ const dbErrors = require("../constants/db.error");
 exports.handler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
+  console.log("error-name", err.name);
   switch (err.name) {
     case errorNameConstant.invalidId:
 
@@ -32,11 +32,18 @@ exports.handler = (err, req, res, next) => {
         data: null,
       });
       break;
-
     case errorNameConstant.unauthorized:
       res.status(401).json({
         status: responseStatus.fail,
         message: errorNameConstant.unauthorized,
+        data: null,
+      });
+      break;
+
+    case errorNameConstant.suspended:
+      res.status(401).json({
+        status: responseStatus.fail,
+        message: errorNameConstant.suspended,
         data: null,
       });
       break;
