@@ -1,7 +1,13 @@
 const Blog = require("../models/blog.model");
 const dbError = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
-const { checkId, getObjectId } = require("./base.service");
+const {
+  checkId,
+  getObjectId,
+  addConditionToCriteria,
+  getPaginatedItems,
+} = require("./base.service");
+const Category = require("../models/category.model");
 
 const createBlog = async (categoryData) => {
   const blog = new Blog(categoryData);
@@ -13,24 +19,58 @@ const createBlog = async (categoryData) => {
   }
 };
 
-const getAllBlog = async (skip, limit = 10) => {
+const getAllBlog = async (
+  skip,
+  limit,
+  sortBy,
+  order,
+  title,
+  categoryName,
+  status
+) => {
+  console.log("serviesafaefjalf");
   try {
-    const blogs = await Blog.find({
-      title: "Add From Postman",
-    })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .skip(skip)
-      .populate({
-        path: "categories",
-        select: "name",
-      })
-      .populate({
-        path: "creator",
-        select: "username email",
-      })
-      .exec();
-    console.log(blogs);
+    let criteria = {};
+
+    criteria = addConditionToCriteria(
+      criteria,
+      "title",
+      title ? { $regex: new RegExp(`.*${title}.*`, "i") } : null
+    );
+
+    criteria = addConditionToCriteria(
+      criteria,
+      "status",
+      status ? status : null
+    );
+
+    const categories = await Category.find({ name: { $in: categoryName } });
+
+    if (categories.length > 0) {
+      criteria = addConditionToCriteria(criteria, "categories", {
+        $in: categories.map((category) => category._id),
+      });
+    }
+
+    const blogs = await getPaginatedItems(
+      Blog,
+      skip,
+      limit,
+      sortBy,
+      order,
+      [
+        {
+          path: "categories",
+          select: "name",
+        },
+        {
+          path: "creator",
+          select: "username email description",
+        },
+      ],
+      criteria
+    );
+    console.log("serviceee-----", blogs);
     return blogs;
   } catch (error) {
     console.log(error);

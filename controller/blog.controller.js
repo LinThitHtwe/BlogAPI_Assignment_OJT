@@ -13,16 +13,38 @@ const verifyRole = require("./verifyRole");
 const role = require("../constants/role");
 
 const getAllBlog = async (req, res, next) => {
-  const { page, limit } = req.query;
+  //const { page, limit } = req.query;
   try {
-    const blogs = await getAllBlogService(page * 0, limit);
-    const totalBlogs = await getTotalBlogsCountService();
-    const nextPage = (page + 1) * 10 > totalBlogs ? null : page + 1;
-    return retrieved(res, `Blogs ${responseMessages.retrievedSuccessfully}`, {
-      ...blogs,
-      totalBlogs,
-      nextPage,
-    });
+    // const blogs = await getAllBlogService(page * 0, limit, {
+    //   title: "",
+    //   creator: "659e290d9e05e6e1edde4440",
+    //   categories: [],
+    // });
+    // const totalBlogs = await getTotalBlogsCountService();
+    // const nextPage = (page + 1) * 10 > totalBlogs ? null : page + 1;
+    // return retrieved(res, `Blogs ${responseMessages.retrievedSuccessfully}`, {
+    //   ...blogs,
+    //   totalBlogs,
+    //   nextPage,
+    // });
+    const { skip, limit, sortBy, order, title, categoryName, status } =
+      req.query;
+
+    const blogs = await getAllBlogService(
+      skip,
+      limit,
+      sortBy,
+      order,
+      title,
+      categoryName,
+      status
+    );
+    console.log(blogs);
+    return retrieved(
+      res,
+      `Blogs ${responseMessages.retrievedSuccessfully}`,
+      blogs
+    );
   } catch (error) {
     next(error);
   }
