@@ -5,6 +5,8 @@ const blog = {
   deleteBlog: "/delete",
   changeBlogStatus: "/change-status/:blogId",
   getBlogById: "/get/:blogId",
+  getBlogByUser: "/user/:userId",
+  dashboard: "/dashboard",
 };
 
 module.exports = blog;

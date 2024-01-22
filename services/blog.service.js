@@ -8,6 +8,8 @@ const {
   getPaginatedItems,
 } = require("./base.service");
 const Category = require("../models/category.model");
+const User = require("../models/user.model");
+const { postStatus } = require("../constants/status");
 
 const createBlog = async (categoryData) => {
   const blog = new Blog(categoryData);
@@ -16,6 +18,39 @@ const createBlog = async (categoryData) => {
     return result;
   } catch (error) {
     throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
+const getAllBlogStatusCount = async () => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+
+    const statusCount = {
+      approved: 0,
+      pending: 0,
+      rejected: 0,
+    };
+
+    blogs.forEach((blog) => {
+      switch (blog.status) {
+        case postStatus.approved:
+          statusCount.approved++;
+          break;
+        case postStatus.pending:
+          statusCount.pending++;
+          break;
+        case postStatus.rejected:
+          statusCount.rejected++;
+          break;
+        default:
+          break;
+      }
+    });
+
+    return statusCount;
+  } catch (error) {
+    console.log(error);
+    throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
   }
 };
 
@@ -28,7 +63,6 @@ const getAllBlog = async (
   categoryName,
   status
 ) => {
-  console.log("serviesafaefjalf");
   try {
     let criteria = {};
 
@@ -70,7 +104,6 @@ const getAllBlog = async (
       ],
       criteria
     );
-    console.log("serviceee-----", blogs);
     return blogs;
   } catch (error) {
     console.log(error);
@@ -110,11 +143,21 @@ const getTotalBlogsCount = async () => {
   }
 };
 
+const getTotalBlogsCountByUser = async (userId) => {
+  try {
+    const totalBlogsCount = await Blog.countDocuments({ creator: userId });
+    return totalBlogsCount;
+  } catch (error) {
+    console.log(error);
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
 const updateBlog = async (blogId, blogData) => {
   try {
     await checkId(blogId, Blog, dbErrorMessages.itemNotFound);
     const existingBlog = await Blog.findById(blogId)
-      .populate("Category")
+      .populate("categories")
       .exec();
     if (!existingBlog) {
       throw new Error(dbErrorMessages.itemNotFound);
@@ -124,9 +167,30 @@ const updateBlog = async (blogId, blogData) => {
     });
     return result;
   } catch (error) {
+    console.log(error);
+
     if (error.name === dbErrorMessages.itemNotFound) {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
+const getBlogByUserId = async (userId, skip = 0, limit = 10) => {
+  try {
+    await checkId(userId, User, dbErrorMessages.itemNotFound);
+    const blogsByUser = await Blog.find({ creator: userId })
+      .populate({
+        path: "categories",
+        select: "name",
+      })
+      .skip(skip)
+      .limit(limit);
+    if (!blogsByUser) {
+      throw new Error(dbErrorMessages.itemNotFound);
+    }
+    return blogsByUser;
+  } catch (error) {
     throw dbError.unprocessableError(dbErrorMessages.unprocessable);
   }
 };
@@ -137,4 +201,7 @@ module.exports = {
   getAllBlog,
   getTotalBlogsCount,
   getBlogById,
+  getBlogByUserId,
+  getTotalBlogsCountByUser,
+  getAllBlogStatusCount,
 };

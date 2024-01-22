@@ -3,7 +3,9 @@ const {
   updateBlog: updateBlogService,
   getBlogById: getBlogByIdService,
   getAllBlog: getAllBlogService,
-  getTotalBlogsCount: getTotalBlogsCountService,
+  getTotalBlogsCountByUser: getTotalBlogsCountByUserService,
+  getBlogByUserId: getBlogByUserIdService,
+  getAllBlogStatusCount: getAllBlogStatusCountService,
 } = require("../services/blog.service");
 const { created, updated, retrieved } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
@@ -13,20 +15,7 @@ const verifyRole = require("./verifyRole");
 const role = require("../constants/role");
 
 const getAllBlog = async (req, res, next) => {
-  //const { page, limit } = req.query;
   try {
-    // const blogs = await getAllBlogService(page * 0, limit, {
-    //   title: "",
-    //   creator: "659e290d9e05e6e1edde4440",
-    //   categories: [],
-    // });
-    // const totalBlogs = await getTotalBlogsCountService();
-    // const nextPage = (page + 1) * 10 > totalBlogs ? null : page + 1;
-    // return retrieved(res, `Blogs ${responseMessages.retrievedSuccessfully}`, {
-    //   ...blogs,
-    //   totalBlogs,
-    //   nextPage,
-    // });
     const { skip, limit, sortBy, order, title, categoryName, status } =
       req.query;
 
@@ -76,6 +65,19 @@ const getBlogById = async (req, res, next) => {
   }
 };
 
+const getBlogsStatusCount = async (req, res, next) => {
+  try {
+    const blogStatusCount = await getAllBlogStatusCountService();
+    retrieved(
+      res,
+      `Blog Status Coiunt ${responseMessages.retrievedSuccessfully}`,
+      blogStatusCount
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateBlog = async (req, res, next) => {
   try {
     const currentLoginUser = verifyRole(req.header("Authorization"));
@@ -92,6 +94,7 @@ const updateBlog = async (req, res, next) => {
       ...requestData,
       updater: currentLoginUser._id,
     });
+
     if (!blog) {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
@@ -108,9 +111,31 @@ const deleteBlog = async (req, res, next) => {
   }
 };
 
+const getBlogByUser = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const blogsByUser = await getBlogByUserIdService(
+      req.params.userId,
+      page * 2,
+      limit
+    );
+    const totalBlogsCount = await getTotalBlogsCountByUserService(
+      req.params.userId
+    );
+    retrieved(res, `Blog ${responseMessages.retrievedSuccessfully}`, {
+      blogs: blogsByUser,
+      totalBlogsCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addBlog,
   updateBlog,
   getBlogById,
   getAllBlog,
+  getBlogByUser,
+  getBlogsStatusCount,
 };

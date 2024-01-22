@@ -2,6 +2,7 @@ const {
   getUserById: getUserByIdService,
   updateUser: updateUserService,
   deleteUser: deleteUserService,
+  getAllUser: getAllUserService,
 } = require("../services/user.service");
 const { retrieved, updated, deleted } = require("./base.controller");
 const responseMessages = require("../constants/response.messages");
@@ -36,7 +37,6 @@ const updateUser = async (req, res, next) => {
     ) {
       throw dbErrors.unauthorizedError(dbErrorMessages.unauthorized);
     }
-
     const user = await updateUserService(req.params.userId, req.body);
     updated(res, `User ${responseMessages.updatedSuccessfully}`, user);
   } catch (error) {
@@ -45,7 +45,6 @@ const updateUser = async (req, res, next) => {
 };
 
 const deleteUser = async (req, res, next) => {
-  console.log("delete user");
   try {
     const oldUser = await getUserByIdService(req.params.userId);
     if (!oldUser) {
@@ -68,8 +67,31 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getAllUser = async (req, res, next) => {
+  try {
+    const { skip, limit, sortBy, order, username, status } = req.query;
+
+    const users = await getAllUserService(
+      skip,
+      limit,
+      sortBy,
+      order,
+      username,
+      status
+    );
+    return retrieved(
+      res,
+      `Users ${responseMessages.retrievedSuccessfully}`,
+      users
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getAllUser,
 };

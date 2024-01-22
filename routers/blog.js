@@ -4,13 +4,17 @@ const {
   updateBlog,
   getBlogById,
   getAllBlog,
+  getBlogByUser,
+  getBlogsStatusCount,
 } = require("../controller/blog.controller");
 const blogRoute = require("../routes/blog");
 const router = require("express").Router();
 
 router.post(blogRoute.addBlog, schemaValidator("blog/"), addBlog);
-router.post(blogRoute.updateBlog, schemaValidator("blog/"), updateBlog);
+router.put(blogRoute.updateBlog, updateBlog);
 router.get(blogRoute.getBlogById, getBlogById);
 router.get(blogRoute.allBlog, getAllBlog);
+router.get(blogRoute.getBlogByUser, getBlogByUser);
+router.get(blogRoute.dashboard, getBlogsStatusCount);
 
 module.exports = router;
