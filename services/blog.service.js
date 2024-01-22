@@ -46,11 +46,14 @@ const getAllBlogStatusCount = async () => {
           break;
       }
     });
+    const data = Object.entries(statusCount).map(([name, value]) => ({
+      name,
+      value,
+    }));
 
-    return statusCount;
+    return data;
   } catch (error) {
-    console.log(error);
-    throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
   }
 };
 
