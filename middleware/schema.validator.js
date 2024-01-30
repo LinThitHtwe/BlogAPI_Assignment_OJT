@@ -36,6 +36,7 @@ const schemaValidator = (path, useJoiError = true) => {
           })),
         },
       };
+      console.log("JOI error------", joiError);
       return res.status(422).json(useJoiError ? joiError : customError);
       //throw dbError.unprocessableError(dbErrorMessages.unprocessable)
     }

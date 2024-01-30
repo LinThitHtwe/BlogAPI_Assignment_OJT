@@ -28,12 +28,30 @@ const getAllBlog = async (req, res, next) => {
       categoryName,
       status
     );
-    console.log(blogs);
     return retrieved(
       res,
       `Blogs ${responseMessages.retrievedSuccessfully}`,
       blogs
     );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const uploadImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided" });
+    }
+
+    const fileName = req.file.filename;
+    const filePath = req.file.path;
+
+    return res.status(200).json({
+      message: "File uploaded successfully",
+      fileName: fileName,
+      filePath: filePath,
+    });
   } catch (error) {
     next(error);
   }
@@ -84,8 +102,8 @@ const updateBlog = async (req, res, next) => {
     const oldBlog = await getBlogByIdService(req.params.blogId);
     if (
       !currentLoginUser ||
-      (currentLoginUser?.role === role.user &&
-        currentLoginUser._id !== oldBlog.creator)
+      (currentLoginUser?.role == role.user &&
+        currentLoginUser._id != oldBlog.creator._id)
     ) {
       throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
     }
@@ -116,7 +134,7 @@ const getBlogByUser = async (req, res, next) => {
     const { page, limit } = req.query;
     const blogsByUser = await getBlogByUserIdService(
       req.params.userId,
-      page * 2,
+      (page - 1) * limit,
       limit
     );
     const totalBlogsCount = await getTotalBlogsCountByUserService(
@@ -138,4 +156,5 @@ module.exports = {
   getAllBlog,
   getBlogByUser,
   getBlogsStatusCount,
+  uploadImage,
 };

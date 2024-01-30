@@ -68,7 +68,7 @@ const loginUser = async (req, res, next) => {
       throw dbErrors.suspendedError(appErrors.accountSuspended);
     }
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "30d",
     });
     retrieved(res, `User ${responseMessages.retrievedSuccessfully}`, {
       user,

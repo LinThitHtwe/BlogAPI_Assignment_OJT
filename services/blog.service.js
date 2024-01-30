@@ -124,7 +124,7 @@ const getBlogById = async (blogId) => {
       })
       .populate({
         path: "creator",
-        select: "username email",
+        select: "username email description",
       })
       .exec();
     return existingBlog;
@@ -170,8 +170,6 @@ const updateBlog = async (blogId, blogData) => {
     });
     return result;
   } catch (error) {
-    console.log(error);
-
     if (error.name === dbErrorMessages.itemNotFound) {
       throw dbError.itemNotFoundError(dbErrorMessages.itemNotFound);
     }
@@ -179,7 +177,7 @@ const updateBlog = async (blogId, blogData) => {
   }
 };
 
-const getBlogByUserId = async (userId, skip = 0, limit = 10) => {
+const getBlogByUserId = async (userId, skip = 0, limit = 5) => {
   try {
     await checkId(userId, User, dbErrorMessages.itemNotFound);
     const blogsByUser = await Blog.find({ creator: userId })

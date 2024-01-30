@@ -9,8 +9,8 @@ const { handler } = require("./middleware/error.handler");
 const app = express();
 
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   cors({
     origin: process.env.CLIENT_PORT,
