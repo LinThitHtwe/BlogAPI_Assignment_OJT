@@ -6,7 +6,7 @@ const dbError = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
 
 function authenticateToken(req, res, next) {
-  const token = req.header("Authorization")?.split(" ")[1];
+  const token = req.header("Authorization");
   if (!token) {
     throw dbError.unauthorizedError(dbErrorMessages.unauthorized);
   }

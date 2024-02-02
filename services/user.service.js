@@ -1,7 +1,11 @@
 const User = require("../models/user.model");
 const dbError = require("../errors/db.error");
 const dbErrorMessages = require("../constants/db.error");
-const { checkId } = require("./base.service");
+const {
+  checkId,
+  getPaginatedItems,
+  addConditionToCriteria,
+} = require("./base.service");
 
 const addUser = async (userData) => {
   const user = new User(userData);
@@ -90,6 +94,34 @@ const deleteUser = async (userId) => {
   }
 };
 
+const getAllUser = async (skip, limit, sortBy, order, username, status) => {
+  try {
+    let criteria = {};
+    criteria = addConditionToCriteria(
+      criteria,
+      "username",
+      username ? { $regex: new RegExp(`.*${username}.*`, "i") } : null
+    );
+    criteria = addConditionToCriteria(
+      criteria,
+      "status",
+      status ? status : null
+    );
+    const users = await getPaginatedItems(
+      User,
+      skip,
+      limit,
+      sortBy,
+      order,
+      "",
+      criteria
+    );
+    return users;
+  } catch (error) {
+    throw dbError.unprocessableError(dbErrorMessages.unprocessable);
+  }
+};
+
 module.exports = {
   addUser,
   updateUser,
@@ -97,4 +129,5 @@ module.exports = {
   getUserById,
   deleteUser,
   getUserByUsername,
+  getAllUser,
 };

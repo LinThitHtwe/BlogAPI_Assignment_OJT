@@ -7,6 +7,10 @@ const blogSchema = new base.Schema({
     type: String,
     required: true,
   },
+  subTitle: {
+    type: String,
+    required: true,
+  },
   content: {
     type: String,
   },

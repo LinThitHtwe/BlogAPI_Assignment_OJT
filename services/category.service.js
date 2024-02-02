@@ -9,6 +9,9 @@ const createCategory = async (categoryData) => {
     const result = await category.save();
     return result;
   } catch (error) {
+    if (error.code === 11000) {
+      throw dbError.alreadyExistsError(dbErrorMessages.alreadyExistsError);
+    }
     throw dbError.unprocessableError(dbErrorMessages.unprocessable);
   }
 };

@@ -31,7 +31,7 @@ const userSchema = new base.Schema({
   status: {
     type: String,
     required: true,
-    default: userStatus.suspended,
+    default: userStatus.active,
     enum: [userStatus.active, userStatus.suspended],
   },
   description: {

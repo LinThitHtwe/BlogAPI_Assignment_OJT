@@ -6,6 +6,7 @@ const dbErrors = require("../constants/db.error");
 exports.handler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
+  console.log("error-name", err);
   console.log("error-name", err.name);
   switch (err.name) {
     case errorNameConstant.invalidId:
@@ -63,6 +64,12 @@ exports.handler = (err, req, res, next) => {
         data: null,
       });
       break;
+    default:
+      res.status(500).json({
+        status: responseStatus.fail,
+        message: "Something Went Wrong",
+        data: null,
+      });
   }
 
   // next();
